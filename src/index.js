@@ -1,5 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
+const cors = require("cors");
+const adminroutes = require("./router/restaurantadmin.routes");
 
 const app = express();
 
@@ -16,13 +18,24 @@ if (!CONNECTION) {
   process.exit(1);
 }
 
+// Middleware
+app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+app.use("/resadmin", adminroutes);
+// app.use("/admin",)
+
 app.get("/", (req, res) => {
   res.send("Welcome to the Dinease API");
 });
 
 const start = async () => {
   try {
-    await mongoose.connect(CONNECTION);
+    await mongoose.connect(CONNECTION, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
     console.log("Connected to MongoDB");
 
     app.listen(PORT, () => {
